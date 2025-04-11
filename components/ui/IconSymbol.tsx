@@ -13,6 +13,12 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'plus.circle.fill': 'add-circle',
+  'minus.circle.fill': 'remove-circle',
+  'xmark.circle.fill': 'cancel', // or 'close' or 'clear' depending on the style you prefer
+  'puzzlepiece.fill': 'extension', // closest MaterialIcons equivalent
+
+
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
