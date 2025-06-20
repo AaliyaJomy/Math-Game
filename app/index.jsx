@@ -1,55 +1,65 @@
-import { View, Text, StyleSheet, ImageBackground, Pressable } from 'react-native'
-import React from 'react'
-import {Link } from 'expo-router'
+import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import React from 'react';
+import { Link } from 'expo-router';
 
-import background from "@/assets/images/background.png"
+import background from '@/assets/images/background.png';
 
 const app = () => {
   return (
-    <View style = {styles.container}>
-      <ImageBackground
-      source={background}
-      resize="cover"
-      style={styles.image}
-      >
-      <Text style={styles.text}>Mathlete</Text>
-      <Link href= "/explore" style={{marginHorizontal: 'auto'}} asChild><Pressable style={styles.button}> <Text style={styles.buttonText}>Start</Text></Pressable></Link>
-      </ImageBackground>
-    </View>
-  )
-}
+    <View style={styles.container}>
 
-export default app
+      <Image source={background} style={styles.logo} />
+
+      <Link href="/explore" style={{ marginHorizontal: 'auto' }} asChild>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>Explore</Text>
+        </Pressable>
+      </Link>
+
+      <Link href="/login" style={{ marginHorizontal: 'auto' }} asChild>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>Login</Text>
+        </Pressable>
+      </Link>
+    </View>
+  );
+};
+
+export default app;
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'column',
   },
-  image:{
-    width:'100%',
-    height:'100%',
-    flex:1,
-    resizeMode:'cover',
-    justifyContent: 'center',
+  logo: {
+    width: 450,
+    height: 400,
+    marginBottom: 1,
+    resizeMode: 'contain',
   },
   text: {
-    color:'white',
+    color: 'white',
     fontSize: 42,
-    fontWeight:'bold',
+    fontWeight: 'bold',
     textAlign: 'center',
+    marginBottom: 10,
   },
-  button:{
-    height: 60,
-    borderRadius:20,
-    backgroundColor: 'rgb(0,0,0,0.75)',
-    padding:6,
+  button: {
+    backgroundColor: 'purple',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginTop: 10,
   },
   buttonText: {
-    color:'white',
+    color: 'white',
     fontSize: 16,
-    fontWeight:'bold',
+    fontWeight: 'bold',
     textAlign: 'center',
-    padding:4,
-  }
-})
+    padding: 4,
+  },
+});

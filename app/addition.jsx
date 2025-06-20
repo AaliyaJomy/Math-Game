@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Linking } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import animated from '../assets/images/animated.png'; 
+
 
 const questions = [
   { question: '5 + 3', answer: 8 },
@@ -13,6 +23,26 @@ const Addition = () => {
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
   const router = useRouter();
+
+  // Shared value for image bounce
+  const translateY = useSharedValue(0);
+
+  useEffect(() => {
+    if (showScore) {
+      translateY.value = withRepeat(
+        withSequence(
+          withTiming(-20, { duration: 400 }),
+          withTiming(0, { duration: 400 })
+        ),
+        -1,
+        true
+      );
+    }
+  }, [showScore]);
+
+  const bounceStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   const handleAnswer = (selected) => {
     const correct = questions[currentQ].answer;
@@ -40,21 +70,43 @@ const Addition = () => {
     return options.sort(() => Math.random() - 0.5);
   };
 
+  const handleShareOnTwitter = async () => {
+    const tweet = `I scored ${score} out of ${questions.length} on the Addition Quiz! #MathQuiz #MyScore`;
+    const encodedTweet = encodeURIComponent(tweet);
+    const url = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
+
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      alert('Error sharing to Twitter: ' + error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {showScore ? (
         <>
+          <Animated.View style={[styles.bounceContainer, bounceStyle]}>
+          <Image source={animated} style={styles.image} />
+
+          </Animated.View>
+
           <Text style={styles.title}>Quiz Finished!</Text>
           <Text style={styles.score}>Your Score: {score} / {questions.length}</Text>
+
+          <Pressable style={[styles.button, { backgroundColor: '#1DA1F2' }]} onPress={handleShareOnTwitter}>
+            <Text style={styles.buttonText}>Share on Twitter</Text>
+          </Pressable>
+
           <Pressable style={styles.button} onPress={() => router.replace('/explore')}>
             <Text style={styles.buttonText}>Back to Explore</Text>
           </Pressable>
         </>
       ) : (
         <>
-        <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBarFill, { width: `${((currentQ + (showScore ? 1 : 0)) / questions.length) * 100}%` }]} />
-        </View>
+          <View style={styles.progressBarContainer}>
+            <View style={[styles.progressBarFill, { width: `${((currentQ + (showScore ? 1 : 0)) / questions.length) * 100}%` }]} />
+          </View>
 
           <Text style={styles.question}>
             Question {currentQ + 1}: {questions[currentQ].question}
@@ -84,6 +136,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+  },
+  bounceContainer: {
+    marginBottom: 20,
+  },
+  image: {
+    width: 100,
+    height: 100,
   },
   title: {
     fontSize: 28,
@@ -120,7 +179,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#10b981',
   },
-  
   button: {
     backgroundColor: '#3b82f6',
     paddingVertical: 15,

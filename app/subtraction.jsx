@@ -1,6 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Linking } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import animated from '../assets/images/animated.png'; 
 
 const questions = [
   { question: '10 - 4', answer: 6 },
@@ -13,6 +22,26 @@ const Subtraction = () => {
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
   const router = useRouter();
+
+// Shared value for image bounce
+  const translateY = useSharedValue(0);
+
+  useEffect(() => {
+    if (showScore) {
+      translateY.value = withRepeat(
+        withSequence(
+          withTiming(-20, { duration: 400 }),
+          withTiming(0, { duration: 400 })
+        ),
+        -1,
+        true
+      );
+    }
+  }, [showScore]);
+
+  const bounceStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   const handleAnswer = (selected) => {
     if (selected === questions[currentQ].answer) {
@@ -37,12 +66,35 @@ const Subtraction = () => {
     return options.sort(() => Math.random() - 0.5);
   };
 
+  const handleShareOnTwitter = async () => {
+    const tweet = `I scored ${score} out of ${questions.length} on the Subtraction Quiz! #MathQuiz #MyScore`;
+    const encodedTweet = encodeURIComponent(tweet);  // Encode the tweet for URL safety
+    const url = `https://twitter.com/intent/tweet?text=${encodedTweet}`;
+  
+    try {
+      await Linking.openURL(url); // Open Twitter share URL
+    } catch (error) {
+      alert('Error sharing to Twitter: ' + error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {showScore ? (
         <>
+
+          <Animated.View style={[styles.bounceContainer, bounceStyle]}>
+          <Image source={animated} style={styles.image} />
+
+          </Animated.View>
+
           <Text style={styles.title}>Quiz Complete!</Text>
           <Text style={styles.score}>Your Score: {score} / {questions.length}</Text>
+
+          <Pressable style={[styles.button, { backgroundColor: '#1DA1F2' }]} onPress={handleShareOnTwitter}>
+             <Text style={styles.buttonText}>Share on Twitter</Text>
+          </Pressable>
+          
           <Pressable style={styles.button} onPress={() => router.replace('/explore')}>
             <Text style={styles.buttonText}>Back to Explore</Text>
           </Pressable>
@@ -79,6 +131,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+  },
+  bounceContainer: {
+    marginBottom: 20,
+  },
+  image: {
+    width: 100,
+    height: 100,
   },
   title: {
     fontSize: 28,

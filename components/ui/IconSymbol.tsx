@@ -17,6 +17,8 @@ const MAPPING = {
   'minus.circle.fill': 'remove-circle',
   'xmark.circle.fill': 'cancel', // or 'close' or 'clear' depending on the style you prefer
   'puzzlepiece.fill': 'extension', // closest MaterialIcons equivalent
+  'person.crop.circle.fill': 'account-circle',
+
 
 
 } as Partial<
