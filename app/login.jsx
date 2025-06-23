@@ -32,7 +32,15 @@ const LoginScreen = () => {
 
   const validatePassword = (pw) => {
     const isValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(pw);
+<<<<<<< HEAD
     setPasswordError(isValid ? '' : 'Password must be at least 8 characters with letters and numbers');
+=======
+    if (!isValid) {
+      setPasswordError('Password must be at least 8 characters with letters and numbers!!!');
+    } else {
+      setPasswordError('');
+    }
+>>>>>>> 4be57ee81c1be6966c6140d85dae7d6f8e34dee9
     return isValid;
   };
 
