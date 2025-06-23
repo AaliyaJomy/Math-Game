@@ -127,7 +127,7 @@ export default Puzzle;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fef9c3',
+    backgroundColor: '#f0fff4',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,

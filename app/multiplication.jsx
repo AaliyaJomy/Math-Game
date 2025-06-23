@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -27,17 +28,29 @@ const Multiplication = () => {
   const translateY = useSharedValue(0);
 
   useEffect(() => {
-    if (showScore) {
-      translateY.value = withRepeat(
-        withSequence(
-          withTiming(-20, { duration: 400 }),
-          withTiming(0, { duration: 400 })
-        ),
-        -1,
-        true
-      );
-    }
-  }, [showScore]);
+  if (showScore) {
+    translateY.value = withRepeat(
+      withSequence(
+        withTiming(-20, { duration: 400 }),
+        withTiming(0, { duration: 400 })
+      ),
+      -1,
+      true
+    );
+
+    // Save multiplication score to AsyncStorage
+    const saveProgress = async () => {
+      try {
+        await AsyncStorage.setItem('multiplicationScore', JSON.stringify({ score, total: questions.length }));
+      } catch (err) {
+        console.error('Error saving multiplication score:', err);
+      }
+    };
+
+    saveProgress();
+  }
+}, [showScore]);
+
 
   const bounceStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -27,17 +28,28 @@ const Subtraction = () => {
   const translateY = useSharedValue(0);
 
   useEffect(() => {
-    if (showScore) {
-      translateY.value = withRepeat(
-        withSequence(
-          withTiming(-20, { duration: 400 }),
-          withTiming(0, { duration: 400 })
-        ),
-        -1,
-        true
-      );
-    }
-  }, [showScore]);
+  if (showScore) {
+    translateY.value = withRepeat(
+      withSequence(
+        withTiming(-20, { duration: 400 }),
+        withTiming(0, { duration: 400 })
+      ),
+      -1,
+      true
+    );
+
+    // Save subtraction score to AsyncStorage
+    const saveProgress = async () => {
+      try {
+        await AsyncStorage.setItem('subtractionScore', JSON.stringify({ score, total: questions.length }));
+      } catch (err) {
+        console.error('Error saving subtraction score:', err);
+      }
+    };
+
+    saveProgress();
+  }
+}, [showScore]);
 
   const bounceStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -127,7 +139,7 @@ export default Subtraction;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff0f0',
+    backgroundColor: '#e8deff',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -153,7 +165,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   optionButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#3d1452',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
@@ -163,14 +175,14 @@ const styles = StyleSheet.create({
   }, progressBarContainer: {
     width: '100%',
     height: 10,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#fff',
     borderRadius: 5,
     overflow: 'hidden',
     marginBottom: 20,
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#ef4444',
+    backgroundColor: '#3d1452',
   },  
   button: {
     backgroundColor: '#3b82f6',

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -9,8 +10,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import animated from '../assets/images/animated.png'; 
-
+import animated from '../assets/images/animated.png';
 
 const questions = [
   { question: '5 + 3', answer: 8 },
@@ -24,7 +24,6 @@ const Addition = () => {
   const [showScore, setShowScore] = useState(false);
   const router = useRouter();
 
-  // Shared value for image bounce
   const translateY = useSharedValue(0);
 
   useEffect(() => {
@@ -44,11 +43,12 @@ const Addition = () => {
     transform: [{ translateY: translateY.value }],
   }));
 
-  const handleAnswer = (selected) => {
+  const handleAnswer = async (selected) => {
     const correct = questions[currentQ].answer;
+    const updatedScore = selected === correct ? score + 1 : score;
 
     if (selected === correct) {
-      setScore(score + 1);
+      setScore(updatedScore);
     }
 
     const nextQ = currentQ + 1;
@@ -56,6 +56,14 @@ const Addition = () => {
       setCurrentQ(nextQ);
     } else {
       setShowScore(true);
+      try {
+        await AsyncStorage.setItem('additionScore', JSON.stringify({
+          score: updatedScore,
+          total: questions.length,
+        }));
+      } catch (error) {
+        console.error('Error saving score:', error);
+      }
     }
   };
 
@@ -87,8 +95,7 @@ const Addition = () => {
       {showScore ? (
         <>
           <Animated.View style={[styles.bounceContainer, bounceStyle]}>
-          <Image source={animated} style={styles.image} />
-
+            <Image source={animated} style={styles.image} />
           </Animated.View>
 
           <Text style={styles.title}>Quiz Finished!</Text>
@@ -132,7 +139,7 @@ export default Addition;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fffaf0',
+    backgroundColor: '#f0fff4',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -170,7 +177,7 @@ const styles = StyleSheet.create({
   progressBarContainer: {
     width: '100%',
     height: 10,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#fff',
     borderRadius: 5,
     overflow: 'hidden',
     marginBottom: 20,
