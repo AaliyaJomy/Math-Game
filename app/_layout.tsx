@@ -47,6 +47,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
         }}
         />
+
       <Tabs.Screen
         name="addition"
         options={{
@@ -75,6 +76,15 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="puzzlepiece.fill" color={color} />,
         }}
       />
+
+              <Tabs.Screen
+       name="_aichat"
+       options={{
+      title: 'AIChat',
+      tabBarIcon: ({ color }) => <IconSymbol size={28} name="message.circle" color={color} />,
+    }}
+  />
+
     </Tabs>
   );
 }

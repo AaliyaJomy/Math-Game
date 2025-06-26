@@ -1,51 +1,56 @@
-// This file is a fallback for using MaterialIcons on Android and web.
-
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SymbolWeight } from 'expo-symbols';
 import React from 'react';
-import { OpaqueColorValue, StyleProp, ViewStyle } from 'react-native';
+import { OpaqueColorValue, StyleProp, TextStyle } from 'react-native';
 
-// Add your SFSymbol to MaterialIcons mappings here.
 const MAPPING = {
-  // See MaterialIcons here: https://icons.expo.fyi
-  // See SF Symbols in the SF Symbols app on Mac.
   'house.fill': 'home',
   'paperplane.fill': 'send',
-  'chevron.left.forwardslash.chevron.right': 'code',
-  'chevron.right': 'chevron-right',
   'plus.circle.fill': 'add-circle',
   'minus.circle.fill': 'remove-circle',
-  'xmark.circle.fill': 'cancel', // or 'close' or 'clear' depending on the style you prefer
-  'puzzlepiece.fill': 'extension', // closest MaterialIcons equivalent
+  'xmark.circle.fill': 'cancel',
+  'puzzlepiece.fill': 'extension',
   'person.crop.circle.fill': 'account-circle',
-
-
-
-} as Partial<
-  Record<
-    import('expo-symbols').SymbolViewProps['name'],
-    React.ComponentProps<typeof MaterialIcons>['name']
-  >
->;
+  'message.circle': 'chat', 
+} as const;
 
 export type IconSymbolName = keyof typeof MAPPING;
 
-/**
- * An icon component that uses native SFSymbols on iOS, and MaterialIcons on Android and web. This ensures a consistent look across platforms, and optimal resource usage.
- *
- * Icon `name`s are based on SFSymbols and require manual mapping to MaterialIcons.
- */
 export function IconSymbol({
   name,
   size = 24,
   color,
   style,
+  weight,
 }: {
   name: IconSymbolName;
   size?: number;
   color: string | OpaqueColorValue;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  const materialName = MAPPING[name];
+
+  if (!materialName) {
+    if (__DEV__) {
+      console.warn(`IconSymbol: '${name}' not found in MAPPING`);
+    }
+    return (
+      <MaterialIcons
+        name="help-outline" // fallback icon
+        size={size}
+        color="gray"
+        style={style}
+      />
+    );
+  }
+
+  return (
+    <MaterialIcons
+      name={materialName}
+      size={size}
+      color={color}
+      style={style}
+    />
+  );
 }
